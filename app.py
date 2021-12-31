@@ -12,7 +12,8 @@ def index():
 
 # test locally or deploy
 if LOCAL:
-    app.run(port=500)
+    app.debug = True
+    app.run(port=5000)
 else:
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT"))
     app.run(host='0.0.0.0', port=port)
