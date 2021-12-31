@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 import os
 
-LOCAL = True
+LOCAL = False
 
 app = Flask(__name__)
 
