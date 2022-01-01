@@ -22,6 +22,9 @@ class Users(db.Model):
         return '<User %r>' % self.username
 
 
+# global messages
+messages = []
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -99,13 +102,26 @@ def register_auth():
     return render_template("registerauth.html")
 
 @app.route("/logout", methods=["GET", "POST"])
-def logout():
+def logout():  # TODO sessions won't work with heroku
     session.pop("username", None)
     return redirect(url_for("login"))
 
 @app.route("/draw", methods=["GET", "POST"])
 def draw():
     return render_template("draw.html")
+
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+    return render_template("chat.html", messages=messages)
+
+@app.route("/chatprocess", methods=["GET", "POST"])
+def chat_process():
+    global messages
+    message = request.form.get("textinput")
+    ip = request.environ['REMOTE_ADDR']
+    formatted_message = f"{ip} > {message}"  # ip > this is the message they typed
+    messages.append(formatted_message)
+    return redirect(url_for("chat"))
 
 
 if LOCAL:
