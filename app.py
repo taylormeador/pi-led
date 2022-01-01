@@ -32,7 +32,17 @@ class Users(db.Model):
     date_created = db.Column(db.DateTime, default=datetime)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f"<User {self.username}>"
+
+# chat app model
+class ChatMessages(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    message = db.Column(db.String(250))
+    date_created = db.Column(db.DateTime, default=datetime)
+
+    def __repr__(self):
+        return f"<User {self.username}> <Message {self.message}> <Time {self.time}>"
 
 
 # global messages
@@ -40,6 +50,8 @@ messages = []
 
 @app.route("/")
 def index():
+    if "username" not in session:
+        redirect(url_for("login"))
     return render_template("index.html")
 
 @app.route("/header")
@@ -49,7 +61,6 @@ def header():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if "username" in session:  # if they are already logged in
-        username = session["username"]
         return redirect(url_for("user"))
 
     return render_template("login.html")
@@ -72,7 +83,7 @@ def login_auth():
     return render_template("loginauth.html")
 
 @app.route("/user", methods=["GET", "POST"])
-def user():
+def user():  # this page basically just allows us to see who is currently logged in, if anyone
     if "username" in session:
         username = session["username"]
         return f"<h1>{username}</h1>"
@@ -121,7 +132,7 @@ def register_auth():
     return render_template("registerauth.html")
 
 @app.route("/logout", methods=["GET", "POST"])
-def logout():  # TODO sessions won't work with heroku
+def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
 
@@ -135,14 +146,28 @@ def chat():
 
 @app.route("/chatprocess", methods=["GET", "POST"])
 def chat_process():
-    global messages
     message = request.form.get("textinput")
-    ip = request.environ['REMOTE_ADDR']
-    formatted_message = f"{ip} > {message}"  # ip > this is the message they typed
-    messages.append(formatted_message)
+    username = ""
+    if "username" in session:
+        username = session["username"]
+
+    # add the new message to the db
+    new_message = ChatMessages(username=username, message=message, date_created=datetime.now())
+    db.session.add(new_message)
+    db.session.commit()
+
     return redirect(url_for("chat"))
 
+@app.route("/myshitbox", methods=["GET", "POST"])
+def my_shit_box():
+    if "username" in session:  # get the user
+        username = session["username"]
 
-if LOCAL:
+    else:
+        return redirect(url_for("login"))
+    return render_template("myshitbox.html", messages=messages)
+
+
+if LOCAL:  # TODO figure out how to do this with environment variables
     app.debug = True
     app.run(port=5000)
