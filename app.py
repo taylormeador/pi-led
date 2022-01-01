@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import bcrypt
 import os
 
 LOCAL = False
@@ -31,14 +32,52 @@ def login_page():
 
 @app.route("/register", methods=["GET", "POST"])
 def register_page():
-    admin = Users(username="tester", password_hash="test", date_created=datetime.now())
-    print("starting db.session.add")
-    db.session.add(admin)
-    print("starting db.session.commit")
-    db.session.commit()
     return render_template("register.html")
+
+@app.route("/registerauth", methods=["GET", "POST"])
+def register_auth_page():
+    desired_username = request.form.get("username")
+    desired_password = request.form.get("password")
+    # check that username is not taken, right length, alphanumeric
+    # hash the password
+    # store in db
+    username_valid, password_valid = False, False
+    if 5 <= len(desired_username) <= 15:  # check username length
+        if desired_username.isalnum():  # check if username is alphanumeric
+            if Users.query.filter_by(username=desired_username).first() is None:  # check if username is unique
+                username_valid = True
+            else:
+                print("username is not unique")
+                return render_template("register.html", message="That username is not valid")
+        else:
+            print("username not alphanumeric")
+            return render_template("register.html", message="That username is not valid")
+    else:
+        print("username wrong length")
+        return render_template("register.html", message="That username is not valid")
+
+    if 5 <= len(desired_password) <= 15:  # check password length
+        password_valid = True
+        password = b"desired_password"
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+    else:
+        print("password wrong length")
+        return render_template("register.html", message="That password is not valid")
+
+    # add the new user to the db
+    new_user = Users(username=desired_username, password_hash=hashed_password, date_created=datetime.now())
+    db.session.add(new_user)
+    db.session.commit()
+
+    return render_template("registerauth.html")
 
 
 if LOCAL:
     app.debug = True
     app.run(port=5000)
+
+"""
+admin = Users(username="tester", password_hash="test", date_created=datetime.now())
+db.session.add(admin)
+db.session.commit()
+"""
