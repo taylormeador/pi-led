@@ -4,7 +4,7 @@ from datetime import datetime
 import bcrypt
 import os
 
-LOCAL = False
+LOCAL = True
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -102,6 +102,10 @@ def register_auth():
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
+
+@app.route("/draw", methods=["GET", "POST"])
+def draw():
+    return render_template("draw.html")
 
 
 if LOCAL:
