@@ -9,14 +9,14 @@ header{
     background-color: #282828;
 }
 
-h1{
+h1#title-text{
     position absolute;
     padding: 3px;
     float: left;
     margin-left: 2%;
     margin-top: 10px;
     font-family: "Alfa Slab One", cursive;
-    color: #39ca74;
+    color: #31B7FF;
 }
 
 span{

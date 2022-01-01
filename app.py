@@ -1,15 +1,28 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session
 from datetime import datetime
 import bcrypt
+import redis
 import os
 
-LOCAL = False
+LOCAL = True
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.secret_key = "secret"
 db = SQLAlchemy(app)
+
+# Configure Redis for storing the session data on the server-side
+redis_url = os.getenv("REDISTOGO_URL", "redis://redistogo:f0f1515b7afac238d1c451f729388fc3@pearlfish.redistogo.com:10395/")
+redis = redis.from_url(redis_url)
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_REDIS'] = redis
+
+# Create and initialize the Flask-Session object AFTER `app` has been configured
+server_session = Session(app)
 
 # user db model
 class Users(db.Model):
@@ -53,6 +66,8 @@ def login_auth():
             return render_template("login.html", message="wrong username or password, try again")
     else:
         return render_template("login.html", message="wrong username or password, try again")
+
+    session["username"] = username   # store the session data
 
     return render_template("loginauth.html")
 
