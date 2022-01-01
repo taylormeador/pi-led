@@ -30,6 +30,20 @@ def index():
 def login_page():
     return render_template("login.html")
 
+@app.route("/loginauth", methods=["GET", "POST"])
+def login_auth_page():
+    # get username/password from form and check against db
+    username = request.form.get("username")
+    password = request.form.get("password").encode("utf-8")
+    username_match = Users.query.filter_by(username=username).first()
+    if username_match:
+        db_password = username_match.password_hash.encode("utf-8")
+        if not bcrypt.checkpw(password, db_password):
+            return render_template("login.html", message="wrong username or password, try again")
+    else:
+        return render_template("login.html", message="wrong username or password, try again")
+    return render_template("loginauth.html")
+
 @app.route("/register", methods=["GET", "POST"])
 def register_page():
     return render_template("register.html")
@@ -38,15 +52,15 @@ def register_page():
 def register_auth_page():
     desired_username = request.form.get("username")
     desired_password = request.form.get("password")
-    # check that username is not taken, right length, alphanumeric
-    # hash the password
-    # store in db
-    username_valid, password_valid = False, False
+    """
+    1. check that username is not taken, right length, alphanumeric, and that the password is right length
+    2. hash the password
+    3. store in db
+    4. if valid, user is redirected to page with a confirmation message
+    """
     if 5 <= len(desired_username) <= 15:  # check username length
         if desired_username.isalnum():  # check if username is alphanumeric
-            if Users.query.filter_by(username=desired_username).first() is None:  # check if username is unique
-                username_valid = True
-            else:
+            if not Users.query.filter_by(username=desired_username).first() is None:  # check if username is unique
                 print("username is not unique")
                 return render_template("register.html", message="That username is not valid")
         else:
@@ -57,8 +71,7 @@ def register_auth_page():
         return render_template("register.html", message="That username is not valid")
 
     if 5 <= len(desired_password) <= 15:  # check password length
-        password_valid = True
-        password = b"desired_password"
+        password = desired_password.encode("utf-8")
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
     else:
         print("password wrong length")
@@ -69,15 +82,10 @@ def register_auth_page():
     db.session.add(new_user)
     db.session.commit()
 
+    # redirect to new page
     return render_template("registerauth.html")
 
 
 if LOCAL:
     app.debug = True
     app.run(port=5000)
-
-"""
-admin = Users(username="tester", password_hash="test", date_created=datetime.now())
-db.session.add(admin)
-db.session.commit()
-"""
