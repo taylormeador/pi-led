@@ -29,6 +29,10 @@ messages = []
 def index():
     return render_template("index.html")
 
+@app.route("/header")
+def header():
+    return render_template("header.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if "username" in session:  # if they are already logged in

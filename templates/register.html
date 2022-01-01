@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Register</title>
+    {% include "header.html" %}
+</head>
 <body style="background-color: #36454F;">
 <h2>Account Registration</h2><br>
 <ul>
-    <li>usernames must contain only letters or numbers</li>
-    <li>usernames must be longer than 5 characters but less than 15</li>
-    <li>passwords must be greater than 5 characters but less than 15</li>
+    <li>Usernames must contain only letters or numbers</li>
+    <li>Usernames must be longer than 5 characters but less than 15</li>
+    <li>Passwords must be greater than 5 characters but less than 15</li>
 </ul><br>
 
 <form action="/registerauth" method="POST">

@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Chat</title>
+    {% include "header.html" %}
 </head>
 <body>
-{% for message in messages %}
-    {{ message }}<br>
-{%endfor%}
+{% block content %}
+    <h3>
+        {% for message in messages %}
+            {{ message }}<br>
+        {%endfor%}
+    </h3>
+{% endblock %}
 <br><br><br>
 <form action="/chatprocess" method="POST">
     <input type="text" id="textinput" name="textinput" autofocus="autofocus"><br><br>
