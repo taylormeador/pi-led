@@ -183,7 +183,7 @@ def my_pi_led_submit():
     return requested_channel + " " + username
 
 @app.route("/mypiledrequest", methods=["GET"])
-def my_pi_led_submit():
+def my_pi_led_request():
     # incoming request will include username
     # server will look up username in table and return str indicating requestedChannel
     username = request.args['username']
