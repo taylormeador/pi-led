@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
+from flask_socketio import SocketIO, send
 from datetime import datetime
 import bcrypt
 import redis
@@ -23,7 +24,9 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis
 
-# Create and initialize the Flask-Session object AFTER `app` has been configured
+socketio = SocketIO(app, cors_allowed_origins='*')
+
+# Create and initialize the Flask-Session and Flask-Sockets object AFTER `app` has been configured
 server_session = Session(app)
 
 # user db model
@@ -64,7 +67,6 @@ def header():
 def login():
     if "username" in session:  # if they are already logged in
         return redirect(url_for("user"))
-
     return render_template("login.html")
 
 @app.route("/loginauth", methods=["GET", "POST"])
@@ -144,13 +146,19 @@ def draw():
 
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
-    for i in range(1, 11):  # TODO fix me
+    return render_template("chatsocket.html")
+    """for i in range(1, 11):  # TODO fix me
         result = db.session.execute(f"SELECT * FROM chat_messages WHERE id = {i}")
         username = result.first()["username"] if not None else ""
         message = result.first()["message"]
         datetime = result.first()["date_created"]
         print(f"{datetime} {username} > {message}")
-    return render_template("chat.html", messages=messages)
+    return render_template("chat.html", messages=messages)"""
+
+@socketio.on('message')
+def handle_message(msg):
+    print('Message: ' + msg)
+    send(msg, broadcast=True)
 
 @app.route("/chatprocess", methods=["GET", "POST"])
 def chat_process():
