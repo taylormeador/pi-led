@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
-from flask_socketio import SocketIO, send
 from datetime import datetime
 import bcrypt
 import redis
@@ -23,8 +22,6 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis
-
-socketio = SocketIO(app, cors_allowed_origins='*')
 
 # Create and initialize the Flask-Session and Flask-Sockets object AFTER `app` has been configured
 server_session = Session(app)
@@ -146,19 +143,13 @@ def draw():
 
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
-    return render_template("chatsocket.html")
-    """for i in range(1, 11):  # TODO fix me
+    for i in range(1, 11):  # TODO fix me
         result = db.session.execute(f"SELECT * FROM chat_messages WHERE id = {i}")
         username = result.first()["username"] if not None else ""
         message = result.first()["message"]
-        datetime = result.first()["date_created"]
-        print(f"{datetime} {username} > {message}")
-    return render_template("chat.html", messages=messages)"""
-
-@socketio.on('message')
-def handle_message(msg):
-    print('Message: ' + msg)
-    send(msg, broadcast=True)
+        date_time = result.first()["date_created"]
+        print(f"{date_time} {username} > {message}")
+    return render_template("chat.html", messages=messages)
 
 @app.route("/chatprocess", methods=["GET", "POST"])
 def chat_process():
@@ -174,8 +165,8 @@ def chat_process():
 
     return redirect(url_for("chat"))
 
-@app.route("/myshitbox", methods=["GET", "POST"])
-def my_shit_box():
+@app.route("/mypiled", methods=["GET", "POST"])
+def my_pi_led():
     if "username" in session:  # get the user
         username = session["username"]
 
@@ -184,7 +175,7 @@ def my_shit_box():
 
     else:
         return redirect(url_for("login"))
-    return render_template("myshitbox.html", messages=messages)
+    return render_template("mypiled.html", messages=messages)
 
 @app.route("/testing", methods=["GET", "POST"])
 def testing():
