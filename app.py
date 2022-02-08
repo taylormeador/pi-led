@@ -167,11 +167,9 @@ def chat_process():
 
 @app.route("/mypiled", methods=["GET", "POST"])
 def my_pi_led():
-    if "username" in session:  # get the user
-        username = session["username"]
-
     if request.method == "GET":
-        return request.args
+        username = request.args['user']
+        return username
 
     else:
         return redirect(url_for("login"))
