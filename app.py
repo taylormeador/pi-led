@@ -171,7 +171,7 @@ def my_pi_led():
         username = session["username"]
 
     if request.method == "GET":
-        return "This is a response"
+        return request.args
 
     else:
         return redirect(url_for("login"))
