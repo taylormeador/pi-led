@@ -6,15 +6,17 @@ import bcrypt
 import redis
 import os
 
+# toggle for local development vs deployment
 LOCAL = False
 
+# Flask, db setup
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.secret_key = "secret"
 db = SQLAlchemy(app)
 
 # Configure Redis for storing the session data on the server-side
-redis_url = os.getenv("REDISTOGO_URL", "redis://redistogo:f0f1515b7afac238d1c451f729388fc3@pearlfish.redistogo.com:10395/")
+redis_url = os.getenv("REDISTOGO_URL", "")  # TODO is this right?
 redis = redis.from_url(redis_url)
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
@@ -142,6 +144,12 @@ def draw():
 
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
+    for i in range(1, 11):  # TODO fix me
+        result = db.session.execute(f"SELECT * FROM chat_messages WHERE id = {i}")
+        username = result.first()["username"] if not None else ""
+        message = result.first()["message"]
+        datetime = result.first()["date_created"]
+        print(f"{datetime} {username} > {message}")
     return render_template("chat.html", messages=messages)
 
 @app.route("/chatprocess", methods=["GET", "POST"])
@@ -163,9 +171,17 @@ def my_shit_box():
     if "username" in session:  # get the user
         username = session["username"]
 
+    if request.method == "GET":
+        return "This is a response"
+
     else:
         return redirect(url_for("login"))
     return render_template("myshitbox.html", messages=messages)
+
+@app.route("/testing", methods=["GET", "POST"])
+def testing():
+    if request.method == "GET":
+        return "Hello, world"
 
 
 if LOCAL:  # TODO figure out how to do this with environment variables
