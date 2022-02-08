@@ -47,7 +47,7 @@ class ChatMessages(db.Model):
         return f"<User {self.username}> <Message {self.message}> <Time {self.time}>"
 
 # raspberry pi db model
-class Pi(db.Model):
+class Pis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(45))
     requestedChannel = db.Column(db.String(45))
@@ -178,7 +178,7 @@ def my_pi_led_submit():
 
     channels = ["text_scroller", "colors"]
     if requested_channel in channels:
-        current_user = Pi.query.filter_by(username='Kevmck').first()
+        current_user = Pi.query.filter_by(username=username).first()
         current_user.selectedChannel = requested_channel
         db.session.commit()
 
