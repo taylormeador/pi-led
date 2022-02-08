@@ -46,9 +46,11 @@ class ChatMessages(db.Model):
     def __repr__(self):
         return f"<User {self.username}> <Message {self.message}> <Time {self.time}>"
 
-
-# global messages
-messages = []
+# raspberry pi db model
+class Pi(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(45))
+    requestedChannel = db.Column(db.String(45))
 
 @app.route("/")
 def index():
@@ -149,7 +151,7 @@ def chat():
         message = result.first()["message"]
         date_time = result.first()["date_created"]
         print(f"{date_time} {username} > {message}")
-    return render_template("chat.html", messages=messages)
+    return render_template("chat.html")
 
 @app.route("/chatprocess", methods=["GET", "POST"])
 def chat_process():
@@ -169,10 +171,18 @@ def chat_process():
 def my_pi_led():
     return render_template("mypiled.html")
 
-@app.route("/submitmypiled", methods=["POST"])
-def submit_pi_led():
+@app.route("/mypiledsubmit", methods=["POST"])
+def my_pi_led_submit():
     requested_channel = request.form['channels_dropdown']
-    return requested_channel
+    username = request.form['users_dropdown']
+
+    channels = ["text_scroller", "colors"]
+    if requested_channel in channels:
+        current_user = Pi.query.filter_by(username=username).first()
+        current_user.selectedChannel = requested_channel
+        db.session.commit()
+
+    return requested_channel + " " + username
 
 @app.route("/testing", methods=["GET", "POST"])
 def testing():

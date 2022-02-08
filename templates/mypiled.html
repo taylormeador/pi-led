@@ -8,7 +8,13 @@
 <body style="background-color: #D3D3D3;">
 
 <br><br><br>
-<form action="/submitmypiled" method="POST">
+<form action="/mypiledsubmit" method="POST">
+    <label for="select_user">Choose a user:</label>
+    <select name="users_dropdown" id="select_user">
+        <option value="kev">Kev</option>
+        <option value="taylor">Taylor</option>
+    </select>
+
     <label for="select_channel">Choose a channel:</label>
     <select name="channels_dropdown" id="select_channel">
         <option value="text_scroller">Text Scroller</option>
