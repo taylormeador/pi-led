@@ -178,7 +178,7 @@ def my_pi_led_submit():
 
     channels = ["text_scroller", "colors"]
     if requested_channel in channels:
-        current_user = Pi.query.filter_by(username=username).first()
+        current_user = Pis.query.filter_by(username=username).first()
         current_user.selectedChannel = requested_channel
         db.session.commit()
 
