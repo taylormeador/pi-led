@@ -182,6 +182,14 @@ def my_pi_led_submit():
 
     return requested_channel + " " + username
 
+@app.route("/mypiledrequest", methods=["GET"])
+def my_pi_led_submit():
+    # incoming request will include username
+    # server will look up username in table and return str indicating requestedChannel
+    username = request.args['username']
+    current_user = Pis.query.filter_by(username=username).first()
+    return current_user.requestedChannel
+
 @app.route("/testing", methods=["GET", "POST"])
 def testing():
     if request.method == "GET":
