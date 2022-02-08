@@ -167,15 +167,11 @@ def chat_process():
 
 @app.route("/mypiled", methods=["GET", "POST"])
 def my_pi_led():
-    #if request.method == "GET":
-    #    username = request.args['user']
-    #    if username is not None:
-    #        return username
     return render_template("mypiled.html")
 
-@app.route("/submitmypiled", methods=["POST"])
+@app.route("/submitmypiled", methods=["GET", "POST"])
 def submit_pi_led():
-    return request.args
+    return request.form
 
 @app.route("/testing", methods=["GET", "POST"])
 def testing():
