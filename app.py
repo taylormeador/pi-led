@@ -176,11 +176,9 @@ def my_pi_led_submit():
     requested_channel = request.form['channels_dropdown']
     username = request.form['users_dropdown']
 
-    channels = ["text_scroller", "colors"]
-    if requested_channel in channels:
-        current_user = Pis.query.filter_by(username=username).first()
-        current_user.selectedChannel = requested_channel
-        db.session.commit()
+    current_user = Pis.query.filter_by(username=username).first()
+    current_user.selectedChannel = requested_channel
+    db.session.commit()
 
     return requested_channel + " " + username
 
