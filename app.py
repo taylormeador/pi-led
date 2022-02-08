@@ -173,6 +173,10 @@ def my_pi_led():
     #        return username
     return render_template("mypiled.html")
 
+@app.route("/submitmypiled", methods=["POST"])
+def submit_pi_led():
+    return request.args
+
 @app.route("/testing", methods=["GET", "POST"])
 def testing():
     if request.method == "GET":
