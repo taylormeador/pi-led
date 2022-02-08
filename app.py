@@ -176,7 +176,7 @@ def my_pi_led_submit():
     requested_channel = request.form['channels_dropdown']
     username = request.form['users_dropdown']
 
-    current_user = Pis.query.filter_by(username=username).first()
+    current_user = db.session.query(Pis).filter_by(username=username).first()
     current_user.selectedChannel = requested_channel
     db.session.commit()
 
