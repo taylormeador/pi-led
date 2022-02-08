@@ -169,9 +169,9 @@ def chat_process():
 def my_pi_led():
     if request.method == "GET":
         username = request.args['user']
-        if username is not None:
-            return username
-    return render_template("mypiled.html", messages=messages)
+        #if username is not None:
+        #    return username
+    return render_template("mypiled.html")
 
 @app.route("/testing", methods=["GET", "POST"])
 def testing():
